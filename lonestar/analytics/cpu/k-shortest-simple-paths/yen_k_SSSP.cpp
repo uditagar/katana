@@ -77,7 +77,7 @@ struct NodeAlive {
   using ViewType = katana::PODPropertyView<uint8_t>;
 };
 
-struct EdgeWeight : public katana::PODProperty<uint32_t> {};
+struct EdgeWeight : public katana::PODProperty<float> {};
 
 using NodeData = std::tuple<NodeDist, NodeAlive>;
 using EdgeData = std::tuple<EdgeWeight>;
@@ -149,7 +149,7 @@ DeltaStepAlgo(
     //check if edge to dest has been removed or not
     //this ensures that we do not output an already computed path
     if (remove_edges.find(*dest) == remove_edges.end()) {
-      auto wt = graph->GetEdgeData<EdgeWeight>(edge);
+      auto wt = (uint32_t)(graph->GetEdgeData<EdgeWeight>(edge) * 100000.0f);
       Path* path_dest;
       path_dest = new Path();
       path_dest->parent = source;
@@ -193,7 +193,8 @@ DeltaStepAlgo(
             continue;
           }
 
-          Distance ew = graph->GetEdgeData<EdgeWeight>(ii);
+          Distance ew =
+              (uint32_t)(graph->GetEdgeData<EdgeWeight>(ii) * 100000.0f);
           const Distance new_dist = item.distance + ew;
           Distance old_dist = katana::atomicMin<uint32_t>(ddist, new_dist);
 
