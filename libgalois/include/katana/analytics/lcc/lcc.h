@@ -9,7 +9,7 @@
 // API
 
 namespace katana::analytics {
-
+/*
 	struct NodeTriangleCount {
   using ArrowType = arrow::CTypeTraits<uint64_t>::ArrowType;
   using ViewType = katana::PODPropertyView<std::atomic<uint64_t>>;
@@ -21,7 +21,7 @@ using EdgeData = typename std::tuple<>;
 using PropertyGraph = katana::TypedPropertyGraph<NodeData, EdgeData>;
 
 using Node = PropertyGraph::Node;
-
+*/
 /// A computational plan to for Total Triangle Counting.
 class LCCPlan : public Plan {
 public:

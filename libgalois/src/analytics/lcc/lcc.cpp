@@ -22,7 +22,7 @@
 
 using namespace katana::analytics;
 
-/*struct NodeTriangleCount {
+struct NodeTriangleCount {
   using ArrowType = arrow::CTypeTraits<uint64_t>::ArrowType;
   using ViewType = katana::PODPropertyView<std::atomic<uint64_t>>;
 };
@@ -33,7 +33,6 @@ using EdgeData = typename std::tuple<>;
 using PropertyGraph = katana::TypedPropertyGraph<NodeData, EdgeData>;
 
 using Node = PropertyGraph::Node;
-*/
 
 constexpr static const unsigned kChunkSize = 64U;
 
@@ -318,7 +317,7 @@ ComputeLCC(PropertyGraph* graph) {
 
 katana::Result<std::vector<double>>
 katana::analytics::LCC(
-    PropertyGraph* pg, LCCPlan plan) {
+    katana::PropertyGraph* pg, LCCPlan plan) {
   katana::StatTimer timer_graph_read("GraphReadingTime", "LCC");
   katana::StatTimer timer_auto_algo("AutoRelabel", "LCC");
 
@@ -335,15 +334,26 @@ katana::analytics::LCC(
     return katana::ErrorCode::AssertionFailed;
   }
 
-  std::unique_ptr<katana::PropertyGraph> mutable_pfg;
+  PropertyGraph* graph;
+
+  //std::unique_ptr<katana::PropertyGraph> mutable_pfg;
   if (relabel || !plan.edges_sorted()) {
     // Copy the graph so we don't mutate the users graph.
-    auto mutable_pfg_result = pg->Copy({}, {});
+    /*auto mutable_pfg_result = pg->Copy({}, {});
     if (!mutable_pfg_result) {
       return mutable_pfg_result.error();
     }
     mutable_pfg = std::move(mutable_pfg_result.value());
-    pg = mutable_pfg.get();
+    pg = mutable_pfg.get();*/
+
+	  auto pg_result = PropertyGraph::Make(
+      pg, {});
+  if (!pg_result) {
+    return pg_result.error();
+  }
+
+   graph = pg_result.value();
+
   }
 
   if (relabel) {
@@ -375,13 +385,13 @@ katana::analytics::LCC(
   //auto g = graph.value();
   switch (plan.algorithm()) {
   case LCCPlan::kNodeIteration:
-    NodeIteratingAlgo(pg);
+    NodeIteratingAlgo(graph);
     break;
   case LCCPlan::kEdgeIteration:
-    EdgeIteratingAlgo(pg);
+    EdgeIteratingAlgo(graph);
     break;
   case LCCPlan::kOrderedCount:
-    OrderedCountAlgo(pg);
+    OrderedCountAlgo(graph);
     break;
   default:
     return katana::ErrorCode::InvalidArgument;
