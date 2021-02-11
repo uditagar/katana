@@ -1,0 +1,25 @@
+---------------------------------------------------
+WRITE EDGES FILE
+
+1. Run $python3 write_edges.py
+This creates a csv file of edges with tis format: src, dst, edge_type
+
+2. Then use the graph convert tool to convert it to gr format.
+Run $./graph-convert --edgelist2gr --edgeType=uint32 ~/gtn_Data/ACM/ACM_edges.csv ~/gtn_Data/ACM/ACM_edges.gr
+
+3. Then use the grapn convert tool to convert gr to kg format.
+Run $./graph-convert --gr2kg --edgeType=uint32 ~/gtn_Data/ACM/ACM_edges.gr ~/gtn_Data/ACM/ACM_edges
+
+
+------------------------------------------------------
+WRITE NODE_FEATURES FILE
+
+1. Run $python3 write_node_features.py
+This creates a csv file with node features.
+
+
+------------------------------------------------------
+WRITE LABELS
+
+1. Run $python3 write_labels.py
+This creates 3 csv files; one each for train/val/test data.
